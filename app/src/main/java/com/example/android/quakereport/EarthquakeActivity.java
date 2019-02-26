@@ -16,9 +16,12 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +70,17 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 	        }
         });
 
-	    LoaderManager loaderManager = getLoaderManager();
-	    loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+	    ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+	    if(networkInfo!=null && networkInfo.isConnected()) {
+	    	LoaderManager loaderManager = getLoaderManager();
+	    	loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+	    }
+	    else {
+	    	View loadingIndicator = findViewById(R.id.progressBarIndicator);
+	    	loadingIndicator.setVisibility(View.GONE);
+	    	emptyStateTv.setText("No internet connection!");
+	    }
 
     }
 
